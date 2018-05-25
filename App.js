@@ -1,185 +1,139 @@
 import React, { Component } from 'react';
-import { StyleSheet, StatusBar, Keyboard } from 'react-native';
-import { Font, AppLoading } from 'expo';
-import { View, Examples, Button, Text, DropDownMenu, Icon, TextInput } from '@shoutem/ui';
-  
-import PouchDB from 'pouchdb-core'
-PouchDB.plugin(require('pouchdb-adapter-asyncstorage').default)
-const db = new PouchDB('mydb', {adapter: 'asyncstorage'})
+import { View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import email from 'react-native-email'
 
+var handleEmail = () => {
+        const to = ['tarapi007@gmail.com'] // string or array of email addresses
+        email(to, {
+            // Optional additional arguments
+            //cc: ['bazzy@moo.com', 'doooo@daaa.com'], // string or array of email addresses
+            //bcc: 'mee@mee.com', // string or array of email addresses
+            subject: 'Show how to use',
+            body: 'Some body right here'
+        }).catch(console.error)
+    }
 
+const Button = ({children}) => (
+  <TouchableOpacity onPress={() => {
+    handleEmail();
+  }} style={{flex: 1, backgroundColor : '#ccc', justifyContent: 'center', alignItems: 'center'}}>
+    <Text>{children}</Text>
+  </TouchableOpacity> 
+);
 
-
-
-const clientes = [
-  { title: 'AMontenegro', value: 'amontenegro' },
-  { title: 'Capi', value: 'capi' },
-  { title: 'GlobalCafe', value: 'globalcafe' },
-  { title: 'PetShop', value: 'petshop' }
-];
-
-const usuarios = [
-  { title: 'aaa', value: 'amontenegro' },
-  { title: 'bbb', value: 'capi' },
-  { title: 'ccc', value: 'globalcafe' },
-  { title: 'ddd', value: 'petshop' }
-];
-
-Manager = {
-  abreChamado : ()=>{
-    // Manager.persisteChamado();
-    // Manager.enviaEmail();
-    // use PouchDB
-    db.put({"_id": "mittens2", "name": "Mittens2"});
-    db.get('mittens')
-      .then(doc => {alert(doc._id);alert(doc.name);})
-  },
-  persisteChamado : ()=>{
-  },
-  enviaEmail : ()=>{
-    // var nodemailer = require('nodemailer');
-
-    // var transporte = nodemailer.createTransport({
-    //   service: 'Gmail', // Como mencionei, vamos usar o Gmail
-    //   auth: {
-    //     user: 'tarapi007@gmail.com',
-    //     pass: 'generalize'
-    //   } 
-    // });
-
-    // var email = {
-    //   from: 'usuario@gmail.com', // Quem enviou este e-mail
-    //   to: 'diegopereiracalcada@gmail.com', // Quem receberá
-    //   subject: 'Node.js ♥ unicode',  // Um assunto bacana :-) 
-    //   html: 'E-mail foi enviado do <strong>Node.js</strong>' // O conteúdo do e-mail
-    // };
-
-    // // Pronto, tudo em mãos, basta informar para o transporte
-    // // que desejamos enviar este e-mail
-    // transporte.sendMail(email, function(err, info){
-    //   if(err)
-    //     throw err; // Oops, algo de errado aconteceu.
-
-    //   console.log('Email enviado! Leia as informações adicionais: ', info);
-    // });
-    
-  },
+const metrics = {
+  cntrPaddingTop : 20
 };
 
-class FiltersBar extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {showBtnCloseKeyboard : false}
-    showBtnCloseKeyboard = showBtnCloseKeyboard.bind(this);
+const styles = StyleSheet.create({
+  container : {
+    flex: 1, 
+    paddingTop : metrics.cntrPaddingTop
+  },
+  header : {
+    flexDirection : 'row',
+    alignItems: "center",
+    justifyContent : "space-between",
+    height: 50,
+    backgroundColor: '#ccc',
+    paddingHorizontal: 10
+  },
+  itemChamado : {
+    backgroundColor : '#24b723',
+    height: 100,
+    flexDirection : 'row',
+    padding: 5,
+    marginBottom: 2
   }
+});
 
-  render(){
-    if(this.state.showBtnCloseKeyboard){ //btnFecharTeclado.props.isActive
-      return (
-        <View style={{flex : 2}}>
-          <Button style={{flex : 1, backgroundColor: '#000'}} onPress={()=>{Keyboard.dismiss(); this.setState({showBtnCloseKeyboard : false})}} >
-            <Text style={{color: '#fff', fontSize: 30}}>Fechar Teclado</Text>
-          </Button>
-        </View>  
-      );
-    }
-    
+
+
+class Header extends React.Component{
+  render (){
     return (
-      <View style={{flex : 2}}>
-          <Text>Cliente:</Text>
-          <DropDownMenu
-            styleName="horizontal"
-            options={clientes}
-            selectedOption={clientes[0]}
-            //onOptionSelected={(example) => this.setState({ selectedCliente: example })}
-            titleProperty="title"
-            valueProperty="value"
-          />
-        
-          <Text>Solicitante:</Text>
-          <DropDownMenu
-            styleName="horizontal"
-            options={usuarios}
-            selectedOption={usuarios[0]}
-            //onOptionSelected={(example) => {this.setState({ selectedUsuario: example }); Keyboard.dismiss();}}
-            titleProperty="title"
-            valueProperty="value"
-          />
-        </View>
-    );
+      <View style={styles.header}>
+        <Ionicons name="ios-menu" size={32} color="blue" />
+        <Text>Chamados Abertos</Text>
+        <Ionicons name="md-checkmark-circle" size={32} color="#ccc" />
+      </View>
+    )
   }
 }
 
-function showBtnCloseKeyboard (){
-  this.setState({showBtnCloseKeyboard : true})
+class ItemChamado extends React.Component{
+  render(){
+    return (
+        <View style={styles.itemChamado}>
+          <View style={styles.chamadoInfs, {flex: 3}}>
+            <Text>{this.props.chamado.cliente}</Text>
+            <Text>{this.props.chamado.desc} </Text>
+            <Text>aberto em {this.props.chamado.dtAbertura}</Text>
+          </View>
+          <View style={{flex: 1}}>
+            <Button onPress={() => {
+    Alert.alert('You tapped the button!');
+  }}>
+             Fechar
+            </Button>
+          </View>
+        </View>
+      )
+  }
+}
+
+class Corpo extends React.Component{
+  state = {
+    chamadosAbertos : [{
+      cliente : 'quality',
+      desc : 'descricap1',
+      dtAbertura : '11/11/1111'
+    },{
+      cliente : 'quality',
+      desc : 'descricap2',
+      dtAbertura : '11/11/2222'
+    },{
+      cliente : 'quality',
+      desc : 'descricap3',
+      dtAbertura : '11/11/3333'
+    }],
+  }
+  render(){
+    return (
+        <View>
+          {
+            this.state.chamadosAbertos.map(
+              (chamado)=><ItemChamado chamado={chamado} />
+            )
+          }
+        </View>
+      )
+  }
+}
+
+class Footer extends React.Component{
+  render(){
+    return (
+        <View>
+          <Text>13 chamados abertos</Text>
+        </View>
+      )
+  }
 }
 
 export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      //selectedCliente: clientes[0],
-      //selectedUsuario: usuarios[0]
-    };
-  }
-
-  state = {
-    fontsAreLoaded: false
-  };
-  
-  async componentWillMount() {
-    await Font.loadAsync({
-      'Rubik-Black': require('./node_modules/@shoutem/ui/fonts/Rubik-Black.ttf'),
-      'Rubik-BlackItalic': require('./node_modules/@shoutem/ui/fonts/Rubik-BlackItalic.ttf'),
-      'Rubik-Bold': require('./node_modules/@shoutem/ui/fonts/Rubik-Bold.ttf'),
-      'Rubik-BoldItalic': require('./node_modules/@shoutem/ui/fonts/Rubik-BoldItalic.ttf'),
-      'Rubik-Italic': require('./node_modules/@shoutem/ui/fonts/Rubik-Italic.ttf'),
-      'Rubik-Light': require('./node_modules/@shoutem/ui/fonts/Rubik-Light.ttf'),
-      'Rubik-LightItalic': require('./node_modules/@shoutem/ui/fonts/Rubik-LightItalic.ttf'),
-      'Rubik-Medium': require('./node_modules/@shoutem/ui/fonts/Rubik-Medium.ttf'),
-      'Rubik-MediumItalic': require('./node_modules/@shoutem/ui/fonts/Rubik-MediumItalic.ttf'),
-      'Rubik-Regular': require('./node_modules/@shoutem/ui/fonts/Rubik-Regular.ttf'),
-      'rubicon-icon-font': require('./node_modules/@shoutem/ui/fonts/rubicon-icon-font.ttf'),
-    });
-    
-    this.setState({ fontsAreLoaded: true });
-  }
-  
   render() {
-    if (!this.state.fontsAreLoaded) {
-      return <AppLoading />;
-    }
-    
-    const { selectedExample } = this.state;
-    
     return (
-      <View styleName="flexible" style={{paddingTop: 20}}>
-
-        <FiltersBar />
-      
-        <View style={{flex: 7, marginTop: 30}}>
-          <TextInput
-            style={{flex : 1}}
-            multiline={true}
-            onChangeText={(text) => this.setState({text})}
-            value={this.state.text}
-            placeholder="Digite a descrição..."
-            onFocus = {()=>{showBtnCloseKeyboard()}}
-          />
-        </View>
-
-        <View style={{flex:1}} >
-          <Button styleName="dark" onPress={()=>{Manager.abreChamado();}}>
-            <Icon name="plus-button" />
-            <Text>ABRIR CHAMADO</Text>
-          </Button>
-        </View>  
+      <View style={styles.container}>
+        <Header />
+        <Corpo />
+        <Footer />
       </View>
     );
   }
 }
 
-  
 
 
-  
+

@@ -19,18 +19,21 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/vector-icons": "^6.3.1",
     "@shoutem/ui": "^0.23.4",
     "crypto": "^1.0.1",
     "dns": "^0.2.2",
     "emailjs": "^2.0.0",
     "expo": "^27.0.1",
     "fs": "0.0.1-security",
+    "native-base": "^2.4.4",
     "net": "^1.0.2",
     "nodemailer": "^4.6.4",
     "pouchdb-adapter-asyncstorage": "^6.4.1",
     "pouchdb-core": "^6.4.3",
     "react": "16.3.1",
     "react-native": "~0.55.2",
+    "react-native-vector-icons": "^4.6.0",
     "util": "^0.10.3",
     "utils": "^0.3.1"
   }
